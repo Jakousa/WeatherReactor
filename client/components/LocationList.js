@@ -1,0 +1,44 @@
+import React, { Component } from 'react'
+import axios from 'axios'
+
+import ObservationLocation from './ObservationLocation'
+
+export default class LocationList extends Component {
+    state = {
+        locations: [],
+    }
+
+    componentDidMount() {
+        this.getLocations()
+    }
+
+    getLocations = async () => {
+        const url = '/api/location'
+        const { data: locations } = await axios.get(url)
+        this.setState({ locations })
+    }
+
+    sendObservation = async (location, observation) => {
+        const url = `/api/observation/${location.id}`
+        const { data: responseLocation } = await axios.post(url, observation)
+        const newLocations =
+            [...this.state.locations.filter(l => l.id !== responseLocation.id), responseLocation]
+        newLocations.sort((a, b) => a.id > b.id)
+        this.setState({ locations: newLocations })
+    }
+
+    render() {
+        const { locations } = this.state
+        return (
+            <div className="ui styled accordion">
+                {locations.map(location => (
+                    <ObservationLocation
+                        key={location.id}
+                        location={location}
+                        sendObservation={this.sendObservation}
+                    />
+                ))}
+            </div>
+        )
+    }
+}

@@ -1,0 +1,6 @@
+POST http://localhost:3000/api/observation/1
+content-type: application/json
+
+{
+    "temperature": 123
+}
