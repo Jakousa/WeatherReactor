@@ -1,4 +1,4 @@
-export default (body, title) => `
+export default (title, body, jsfile) => `
 <!DOCTYPE html>
 <html>
   <head>
@@ -9,7 +9,7 @@ export default (body, title) => `
     <div id="app">
     ${body}
     </div>
-    <script src="dist/d407937c69108a79e47e3e30232487ef.js"></script>    
+    <script src="dist/${jsfile}"></script>    
   </body>
 </html>
 `

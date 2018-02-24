@@ -15,15 +15,20 @@ app.use(bodyParser.json())
 app.use('/api', routes)
 
 const waitForBundle = async () => {
-    const bundler = new Bundler('./client/index.html', { minify: true }) // Parcel gets stuck if not minified
+    const bundler = new Bundler(
+        './client/index.html',
+        {
+            minify: true, // Parcel gets stuck if not minified
+        },
+    )
     console.log('start bundling')
     await bundler.bundle()
-    console.log('bundle done')
+    console.log('Bundle done')
     if (process.env.NODE_ENV !== 'production') {
         app.use(bundler.middleware())
     } else {
         app.use('/dist', express.static('dist/'))
-        app.get('/', renderServerSide)
+        app.get('/', renderServerSide(bundler))
     }
 }
 
