@@ -9,7 +9,7 @@ export default (body, title) => `
     <div id="app">
     ${body}
     </div>
-    <script src="dist/de64253eabc8fa0215367da13c451610.js"></script>    
+    <script src="dist/d407937c69108a79e47e3e30232487ef.js"></script>    
   </body>
 </html>
 `

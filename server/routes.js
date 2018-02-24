@@ -1,10 +1,90 @@
 const router = require('express').Router()
 const mongoose = require('mongoose')
 
+const { Schema } = mongoose
 const url = process.env.DATABASE_URL
 
 mongoose.connect(url)
 
+const locationSchema = new Schema({
+    name: String,
+    lat: Number,
+    long: Number,
+    observations: [{
+        temperature: Number,
+        createdAt: Date,
+    }],
+})
+
+/**
+ * @param {*} observations observations to be filtered
+ */
+const filterObservations = observations => observations
+    .sort((a, b) => a.createdAt > b.createdAt)
+    .filter((obs, index) => {
+        if (index === observations.length - 1) {
+            return true // Take newest
+        }
+        // Take observations within 24 hours
+        const yesterday = new Date()
+        yesterday.setDate(yesterday.getDate() - 1)
+        const isWithin24Hours = obs.createdAt && obs.createdAt > yesterday
+
+        return obs.createdAt && isWithin24Hours
+    })
+
+locationSchema.statics.format = (loc) => {
+    const {
+        _id: id, name, lat, long, observations,
+    } = loc
+    const filteredObservations = filterObservations(observations)
+        .map(obs => ({ temperature: obs.temperature, createdAt: obs.createdAt }))
+    return {
+        id,
+        name,
+        lat,
+        long,
+        observations: filteredObservations,
+    }
+}
+
+const Location = mongoose.model('Location', locationSchema)
+
+/**
+ * Return all locations
+ */
+router.get('/location', async (req, res) => {
+    const locations = await Location.find()
+    res.status(200).json(locations.map(Location.format)).end()
+})
+
+// Simple validations
+const ABSOLUTE_ZERO = -237.15
+const REALLY_HOT = 50
+const validTemperature = n => Number(n) > ABSOLUTE_ZERO && Number(n) < REALLY_HOT
+const isNumeric = n => !Number.isNaN(Number(n)) && Number.isFinite(Number(n))
+
+/**
+ * Create new observation and return the updated location
+ */
+router.post('/observation/:id', async (req, res) => {
+    const observation = Object.assign({ createdAt: new Date() }, req.body)
+    if (!isNumeric(observation.temperature) || !validTemperature(observation.temperature)) {
+        return res.status(400).end()
+    }
+    const locationId = req.params.id
+    const location = await Location.findByIdAndUpdate(
+        locationId,
+        { $push: { observations: observation } },
+        { new: true },
+    )
+    return res.status(200).json(Location.format(location)).end()
+})
+
+module.exports = router
+
+
+/*
 const locations = [
     {
         id: 1,
@@ -42,22 +122,4 @@ const locations = [
         observations: [],
     },
 ]
-
-router.get('/location', (req, res) => {
-    res.status(200).json(locations).end()
-})
-
-router.post('/observation/:id', (req, res) => {
-    const receivedObservation = Object.assign({}, req.body)
-    const locationId = Number(req.params.id)
-    console.log(locationId)
-    const foundLocation = locations.find(location => location.id === locationId)
-    if (!foundLocation) {
-        res.status(404).end()
-    } else {
-        foundLocation.observations.push(receivedObservation)
-        res.status(200).json(foundLocation).end()
-    }
-})
-
-module.exports = router
+*/

@@ -23,7 +23,7 @@ export default class LocationList extends Component {
         const { data: responseLocation } = await axios.post(url, observation)
         const newLocations =
             [...this.state.locations.filter(l => l.id !== responseLocation.id), responseLocation]
-        newLocations.sort((a, b) => a.id > b.id)
+        newLocations.sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase())
         this.setState({ locations: newLocations })
     }
 
@@ -31,13 +31,15 @@ export default class LocationList extends Component {
         const { locations } = this.state
         return (
             <div className="ui styled accordion">
-                {locations.map(location => (
-                    <ObservationLocation
-                        key={location.id}
-                        location={location}
-                        sendObservation={this.sendObservation}
-                    />
-                ))}
+                {locations
+                    .sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase())
+                    .map(location => (
+                        <ObservationLocation
+                            key={location.id}
+                            location={location}
+                            sendObservation={this.sendObservation}
+                        />
+                    ))}
             </div>
         )
     }
