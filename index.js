@@ -4,7 +4,7 @@ require('dotenv').config()
 
 const express = require('express')
 const routes = require('./server/routes')
-const renderServerSide = require('./renderServerSide')
+const renderServerSide = require('./server/render')
 const bodyParser = require('body-parser')
 const Bundler = require('parcel-bundler')
 
