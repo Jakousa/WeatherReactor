@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import LocationControl from './LocationControl'
 
-export default class ObservationLocation extends Component {
+export default class LocationView extends Component {
     state = {
         active: false,
     }

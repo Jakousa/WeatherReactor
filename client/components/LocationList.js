@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 
-import ObservationLocation from './ObservationLocation'
+import LocationView from './LocationView'
 
 export default class LocationList extends Component {
     state = {
@@ -34,7 +34,7 @@ export default class LocationList extends Component {
                 {locations
                     .sort((a, b) => a.name.toLowerCase() > b.name.toLowerCase())
                     .map(location => (
-                        <ObservationLocation
+                        <LocationView
                             key={location.id}
                             location={location}
                             sendObservation={this.sendObservation}

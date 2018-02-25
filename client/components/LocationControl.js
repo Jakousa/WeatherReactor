@@ -1,32 +1,10 @@
 import React, { Component } from 'react'
+import ObservationView from './ObservationView'
+import ObservationList from './ObservationList'
 
 export default class LocationControl extends Component {
     state = {
         newTemperature: '',
-        latestTemp: undefined,
-        highestTemp: undefined,
-        lowestTemp: undefined,
-    }
-
-    componentDidMount() {
-        const { observations } = this.props.location
-        this.setTemperatures(observations)
-    }
-
-    componentWillReceiveProps(newProps) {
-        const { observations } = newProps.location
-        this.setTemperatures(observations)
-    }
-
-    setTemperatures = (observations) => {
-        if (observations && observations.length > 0) {
-            const copyObservations = [...observations]
-            copyObservations.sort((a, b) => a.temperature < b.temperature)
-            const { temperature: lowestTemp } = copyObservations[copyObservations.length - 1]
-            const { temperature: highestTemp } = copyObservations[0]
-            const { temperature: latestTemp } = observations[observations.length - 1]
-            this.setState({ lowestTemp, highestTemp, latestTemp })
-        }
     }
 
     handleChange = (event) => {
@@ -42,22 +20,42 @@ export default class LocationControl extends Component {
         this.props.sendObservation(location, observation)
     }
 
+    toggleObservationList = () => {
+        this.setState({ displayList: !this.state.displayList })
+    }
+
+    renderList = () => {
+        if (this.state.displayList) {
+            return (
+                <div className="ui right rail">
+                    <ObservationList observations={this.props.location.observations} />
+                </div>
+            )
+        }
+        return null
+    }
+
     render() {
         const { location } = this.props
-        const { latestTemp, highestTemp, lowestTemp } = this.state
         return (
-            <div>
+            <div className="ui segment">
                 <h3>{location.name}: {location.lat}, {location.long} </h3>
-                <h4>Latest temperature: {latestTemp}</h4>
-                <h4>Highest temperature in 24h: {highestTemp}</h4>
-                <h4>Lowest temperature in 24h: {lowestTemp}</h4>
-                <div className="ui left action input">
-                    <button className="ui blue labeled icon button" onClick={this.handleObservation}>
-                        <i className="plus icon" />
-                        Add
+                <ObservationView observations={location.observations} />
+                <br />
+                <div className="ui grid">
+                    <div className="ui left action input">
+                        <button className="ui blue labeled icon button" onClick={this.handleObservation}>
+                            <i className="plus icon" />
+                            Add observation
+                        </button>
+                        <input onChange={this.handleChange} type="text" />
+                    </div>
+                    <button className="ui green button" onClick={this.toggleObservationList}>
+                        Open list
                     </button>
-                    <input onChange={this.handleChange} type="text" />
                 </div>
+                {this.renderList()}
+
             </div>
         )
     }

@@ -16,29 +16,12 @@ const locationSchema = new Schema({
     }],
 })
 
-/**
- * @param {*} observations observations to be filtered
- */
-const filterObservations = observations => observations
-    .sort((a, b) => a.createdAt > b.createdAt)
-    .filter((obs, index) => {
-        if (index === observations.length - 1) {
-            return true // Take newest
-        }
-        // Take observations within 24 hours
-        const yesterday = new Date()
-        yesterday.setDate(yesterday.getDate() - 1)
-        const isWithin24Hours = obs.createdAt && obs.createdAt > yesterday
-
-        return obs.createdAt && isWithin24Hours
-    })
-
 locationSchema.statics.format = (loc) => {
     const {
         _id: id, name, lat, long, observations,
     } = loc
-    const filteredObservations = filterObservations(observations)
-        .map(obs => ({ temperature: obs.temperature, createdAt: obs.createdAt }))
+    const filteredObservations = observations
+        .map(obs => ({ temperature: obs.temperature, createdAt: obs.createdAt, id: obs.id }))
     return {
         id,
         name,
