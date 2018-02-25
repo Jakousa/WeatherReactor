@@ -6,9 +6,13 @@ const express = require('express')
 const routes = require('./server/routes')
 const renderServerSide = require('./server/render')
 const Bundler = require('parcel-bundler')
+const mongoose = require('mongoose')
+
+const url = process.env.DATABASE_URL
+
+mongoose.connect(url)
 
 const app = express()
-
 
 app.use('/api', routes)
 
@@ -20,7 +24,7 @@ const waitForBundle = async () => {
         },
     )
     console.log('start bundling')
-    await bundler.bundle()
+    bundler.bundle()
     console.log('Bundle done')
     if (process.env.NODE_ENV !== 'production') {
         app.use(bundler.middleware())
@@ -34,5 +38,11 @@ waitForBundle(app).then(() => {
     const PORT = process.env.PORT || 3000
     app.listen(PORT, () => {
         console.log(`Server running on port ${PORT}`)
+    })
+})
+
+process.on('SIGINT', () => {
+    mongoose.connection.close(() => {
+        process.exit(0)
     })
 })

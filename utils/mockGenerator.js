@@ -5,8 +5,8 @@ export const mockObservations = (amount) => {
 
     for (let i = 0; i < amount; i += 1) {
         observations.push({
-            temperature: numberFromTo(-100, 100),
-            createdAt: new Date(),
+            temperature: numberFromTo(-100, 50),
+            createdAt: (new Date()).toISOString(),
         })
     }
     return observations
@@ -14,7 +14,7 @@ export const mockObservations = (amount) => {
 
 export const mockLocations = (amount) => {
     const locations = []
-    const preset = numberFromTo(0, 100) // Helps debugging
+    const preset = numberFromTo(0, 100)
     for (let i = 0; i < amount; i += 1) {
         const observations = mockObservations(numberFromTo(1, 10))
         locations.push({

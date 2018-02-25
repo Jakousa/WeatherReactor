@@ -3,13 +3,6 @@ const bodyParser = require('body-parser')
 
 const Location = require('./models/Location')
 
-const mongoose = require('mongoose')
-
-if (process.env.NODE_ENV !== 'test') {
-    const url = process.env.DATABASE_URL
-    mongoose.connect(url)
-}
-
 router.use(bodyParser.json())
 
 /**
@@ -18,10 +11,8 @@ router.use(bodyParser.json())
 router.get('/location', async (req, res) => {
     try {
         const locations = await Location.find()
-        mongoose.connection.close()
         res.status(200).json(locations.map(Location.format)).end()
     } catch (exception) {
-        mongoose.connection.close()
         res.status(500).end()
     }
 })
@@ -37,7 +28,10 @@ const isNumeric = n => !Number.isNaN(Number(n)) && Number.isFinite(Number(n))
  */
 router.post('/observation/:id', async (req, res) => {
     try {
-        const observation = Object.assign({ createdAt: new Date() }, req.body)
+        const observation = Object.assign(
+            { createdAt: new Date() },
+            { temperature: req.body.temperature },
+        )
         if (!isNumeric(observation.temperature) || !validTemperature(observation.temperature)) {
             return res.status(400).end()
         }
@@ -47,10 +41,8 @@ router.post('/observation/:id', async (req, res) => {
             { $push: { observations: observation } },
             { new: true },
         )
-        mongoose.connection.close()
         return res.status(200).json(Location.format(location)).end()
     } catch (exception) {
-        mongoose.connection.close()
         return res.status(500).end()
     }
 })
