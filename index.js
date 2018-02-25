@@ -5,12 +5,10 @@ require('dotenv').config()
 const express = require('express')
 const routes = require('./server/routes')
 const renderServerSide = require('./server/render')
-const bodyParser = require('body-parser')
 const Bundler = require('parcel-bundler')
 
 const app = express()
 
-app.use(bodyParser.json())
 
 app.use('/api', routes)
 

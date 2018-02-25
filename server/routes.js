@@ -1,18 +1,29 @@
 const router = require('express').Router()
-const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 
 const Location = require('./models/Location')
 
-const url = process.env.DATABASE_URL
+const mongoose = require('mongoose')
 
-mongoose.connect(url)
+if (process.env.NODE_ENV !== 'test') {
+    const url = process.env.DATABASE_URL
+    mongoose.connect(url)
+}
+
+router.use(bodyParser.json())
 
 /**
  * Return all locations
  */
 router.get('/location', async (req, res) => {
-    const locations = await Location.find()
-    res.status(200).json(locations.map(Location.format)).end()
+    try {
+        const locations = await Location.find()
+        mongoose.connection.close()
+        res.status(200).json(locations.map(Location.format)).end()
+    } catch (exception) {
+        mongoose.connection.close()
+        res.status(500).end()
+    }
 })
 
 // Simple validations
@@ -25,17 +36,23 @@ const isNumeric = n => !Number.isNaN(Number(n)) && Number.isFinite(Number(n))
  * Create new observation and return the updated location
  */
 router.post('/observation/:id', async (req, res) => {
-    const observation = Object.assign({ createdAt: new Date() }, req.body)
-    if (!isNumeric(observation.temperature) || !validTemperature(observation.temperature)) {
-        return res.status(400).end()
+    try {
+        const observation = Object.assign({ createdAt: new Date() }, req.body)
+        if (!isNumeric(observation.temperature) || !validTemperature(observation.temperature)) {
+            return res.status(400).end()
+        }
+        const locationId = req.params.id
+        const location = await Location.findByIdAndUpdate(
+            locationId,
+            { $push: { observations: observation } },
+            { new: true },
+        )
+        mongoose.connection.close()
+        return res.status(200).json(Location.format(location)).end()
+    } catch (exception) {
+        mongoose.connection.close()
+        return res.status(500).end()
     }
-    const locationId = req.params.id
-    const location = await Location.findByIdAndUpdate(
-        locationId,
-        { $push: { observations: observation } },
-        { new: true },
-    )
-    return res.status(200).json(Location.format(location)).end()
 })
 
 module.exports = router
