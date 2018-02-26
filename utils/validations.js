@@ -5,4 +5,4 @@ export const validTemperature = n => Number(n) > ABSOLUTE_ZERO && Number(n) < RE
 
 export const isNumeric = n => !Number.isNaN(Number(n))
     && Number.isFinite(Number(n))
-    && !Number.isNaN(String.parseInt(n))
+    && !Number.isNaN(Number.parseInt(n, 10))

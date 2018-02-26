@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { isNumeric } from '../../utils/validations'
 
 export default class ObservationView extends Component {
     state = {
@@ -45,7 +46,7 @@ export default class ObservationView extends Component {
 
     render() {
         const { latestTemp, highestTemp, lowestTemp } = this.state
-        const numberToCelsius = n => (n ? `${n}C°` : undefined)
+        const numberToCelsius = n => (isNumeric(n) ? `${n}C°` : undefined)
 
         return (
             <div>

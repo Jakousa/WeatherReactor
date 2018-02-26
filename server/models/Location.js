@@ -16,14 +16,14 @@ locationSchema.statics.format = (loc) => {
     const {
         _id: id, name, lat, long, observations,
     } = loc
-    const filteredObservations = observations
+    const formattedObservations = observations
         .map(obs => ({ temperature: obs.temperature, createdAt: obs.createdAt, id: obs.id }))
     return {
         id,
         name,
         lat,
         long,
-        observations: filteredObservations,
+        observations: formattedObservations,
     }
 }
 

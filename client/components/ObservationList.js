@@ -20,7 +20,6 @@ const groupObservationsByDate = observations => observations.sort(sortByDate).re
     return acc
 }, [])
 
-
 const ObservationList = ({ observations }) => {
     if (!observations) return null
     const grouped = groupObservationsByDate(observations)
@@ -30,7 +29,7 @@ const ObservationList = ({ observations }) => {
             {grouped.map(dateObject => (
                 <div key={dateObject.name}>
                     <b>{dateObject.name}</b>
-                    {dateObject.temperatureTime.map(obs => (
+                    {dateObject.temperatureTime.sort(sortByDate).map(obs => (
                         <div key={obs.id}>
                             {obs.time}: {obs.temperature} C°
                         </div>

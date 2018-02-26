@@ -23,5 +23,5 @@ if (typeof window !== 'undefined') {
 }
 
 if (module.hot) {
-    module.hot.accept('./components/App', () => refresh())
+    module.hot.accept('./components/App.js', () => refresh())
 }
