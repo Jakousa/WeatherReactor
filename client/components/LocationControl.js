@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { Input, Button, Icon, Segment, Sidebar, Menu } from 'semantic-ui-react'
+import { isNumeric, validTemperature } from '../../utils/validations'
 
 import ObservationView from './ObservationView'
 import ObservationList from './ObservationList'
@@ -8,10 +9,14 @@ export default class LocationControl extends Component {
     state = {
         newTemperature: '',
         displayList: false,
+        error: false,
     }
 
+    isValid = value => isNumeric(value) && validTemperature(value)
+
     handleChange = (event) => {
-        this.setState({ newTemperature: event.target.value })
+        const { value } = event.target
+        this.setState({ newTemperature: value, error: !this.isValid(value) })
     }
 
     handleObservation = () => {
@@ -20,7 +25,10 @@ export default class LocationControl extends Component {
         const observation = {
             temperature,
         }
-        this.props.sendObservation(location, observation)
+        if (this.isValid(temperature)) {
+            this.props.sendObservation(location, observation)
+        }
+        this.setState({ error: !this.isValid(temperature) })
     }
 
     toggleObservationList = () => {
@@ -29,7 +37,7 @@ export default class LocationControl extends Component {
 
     render() {
         const { location } = this.props
-        const { displayList } = this.state
+        const { displayList, error } = this.state
         return (
             <div>
                 <Sidebar.Pushable as={Segment}>
@@ -60,6 +68,7 @@ export default class LocationControl extends Component {
                                 onClick: this.handleObservation,
                             }}
                             actionPosition="left"
+                            error={error}
                         />
                         <br />
 
