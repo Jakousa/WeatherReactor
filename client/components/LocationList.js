@@ -22,9 +22,7 @@ export default class LocationList extends Component {
         const { locations } = this.props
         const panes = this.createPanesFromLocations(locations)
         return (
-            <div className="ui styled accordion">
-                <Tab menu={{ pointing: true }} panes={panes} />
-            </div>
+            <Tab menu={{ pointing: true }} panes={panes} />
         )
     }
 }

@@ -28,12 +28,10 @@ export default class App extends Component {
 
     render() {
         return (
-            <div>
-                <LocationList
-                    locations={this.state.locations}
-                    sendObservation={this.sendObservation}
-                />
-            </div >
+            <LocationList
+                locations={this.state.locations}
+                sendObservation={this.sendObservation}
+            />
         )
     }
 }
