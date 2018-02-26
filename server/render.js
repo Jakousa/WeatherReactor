@@ -6,8 +6,11 @@ import template from '../template'
 import Location from './models/Location'
 
 const findJSFileFromBundle = (bundler) => {
-    const keys = bundler.bundleHashes.keys()
-    return Array.from(keys).filter(key => key.includes('js'))[0].split(/\\|\//).filter(part => part.includes('js'))[0]
+    if (bundler.bundleHashes) {
+        const keys = bundler.bundleHashes.keys()
+        return Array.from(keys).filter(key => key.includes('js'))[0].split(/\\|\//).filter(part => part.includes('js'))[0]
+    }
+    return null
 }
 
 const renderServerSide = bundler => async (req, res) => {

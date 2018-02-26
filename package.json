@@ -7,7 +7,7 @@
     "start": "NODE_ENV=production node index.js",
     "start:front": "parcel client/index.html",
     "dev:ssr": "set NODE_ENV=production&&node index.js",
-    "dev": "set NODE_ENV=development&&nodemon index.js",
+    "dev": "set NODE_ENV=development&&node index.js",
     "test": "cross-env NODE_ENV=test ava",
     "lint": "eslint --init"
   },

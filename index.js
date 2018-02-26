@@ -23,12 +23,14 @@ const waitForBundle = async () => {
             minify: true, // Parcel gets stuck if not minified
         },
     )
-    console.log('start bundling')
-    bundler.bundle()
-    console.log('Bundle done')
+
     if (process.env.NODE_ENV !== 'production') {
+        console.log('start bundling')
+        await bundler.bundle()
+        console.log('Bundle done')
         app.use(bundler.middleware())
     } else {
+        bundler.bundle()
         app.use('/dist', express.static('dist/'))
         app.get('/', renderServerSide(bundler))
     }
