@@ -20,9 +20,11 @@ export default class ObservationView extends Component {
     setTemperatures = (observations) => {
         if (observations && observations.length > 0) {
             const temperatures = this.filterObservations(observations).map(obs => obs.temperature)
-            const lowestTemp = Math.min(...temperatures)
-            const highestTemp = Math.max(...temperatures)
 
+            let lowestTemp = Math.min(...temperatures)
+            lowestTemp = Number.isFinite(lowestTemp) ? lowestTemp : undefined
+            let highestTemp = Math.max(...temperatures)
+            highestTemp = Number.isFinite(highestTemp) ? highestTemp : undefined
             // Latest temp requires us to get the one with highest date value
             const { temperature: latestTemp } = observations.reduce((acc, cur) => (
                 new Date(cur.createdAt) > new Date(acc.createdAt) ? cur : acc), { createdAt: 0 })
@@ -40,14 +42,16 @@ export default class ObservationView extends Component {
             return obs.createdAt && isWithin24Hours
         })
 
+
     render() {
         const { latestTemp, highestTemp, lowestTemp } = this.state
+        const numberToCelsius = n => (n ? `${n}C°` : undefined)
 
         return (
             <div>
-                <h4>Latest temperature: {latestTemp}</h4>
-                <h4>Highest temperature in 24h: {highestTemp}</h4>
-                <h4>Lowest temperature in 24h: {lowestTemp}</h4>
+                <h4>Latest temperature: {numberToCelsius(latestTemp)}</h4>
+                <h4>Highest temperature in 24h: {numberToCelsius(highestTemp)}</h4>
+                <h4>Lowest temperature in 24h: {numberToCelsius(lowestTemp)}</h4>
             </div>
         )
     }

@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import { Input, Button, Icon, Segment, Rail } from 'semantic-ui-react'
+
 import ObservationView from './ObservationView'
 import ObservationList from './ObservationList'
 
@@ -27,9 +29,9 @@ export default class LocationControl extends Component {
     renderList = () => {
         if (this.state.displayList) {
             return (
-                <div className="ui right rail">
+                <Rail position="right">
                     <ObservationList observations={this.props.location.observations} />
-                </div>
+                </Rail>
             )
         }
         return null
@@ -38,25 +40,33 @@ export default class LocationControl extends Component {
     render() {
         const { location } = this.props
         return (
-            <div className="ui segment">
+            <Segment>
                 <h3>{location.name}: {location.lat}, {location.long} </h3>
                 <ObservationView observations={location.observations} />
                 <br />
-                <div className="ui grid">
-                    <div className="ui left action input">
-                        <button className="ui blue labeled icon button" onClick={this.handleObservation}>
-                            <i className="plus icon" />
-                            Add observation
-                        </button>
-                        <input onChange={this.handleChange} type="text" />
-                    </div>
-                    <button className="ui green button" onClick={this.toggleObservationList}>
-                        Open list
-                    </button>
-                </div>
+                <Input
+                    onChange={this.handleChange}
+                    label={{ basic: true, content: 'C°' }}
+                    labelPosition="right"
+                    action={{
+                        color: 'blue',
+                        labelPosition: 'left',
+                        icon: 'thermometer',
+                        content: 'Add observation',
+                        onClick: this.handleObservation,
+                    }}
+                    actionPosition="left"
+                />
+                <br />
+                <Button animated color="green" onClick={this.toggleObservationList}>
+                    <Button.Content visible>Open observation list</Button.Content>
+                    <Button.Content hidden>
+                        <Icon name="right arrow" />
+                    </Button.Content>
+                </Button>
                 {this.renderList()}
 
-            </div>
+            </Segment>
         )
     }
 }

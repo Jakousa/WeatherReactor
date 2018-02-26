@@ -5,7 +5,7 @@ const ObservationList = ({ observations }) => (!observations ? null : (
         <h4> Observations: </h4>
         {observations.map(obs => (
             <div key={obs.id}>
-                {new Date(obs.createdAt).toLocaleString()}: {obs.temperature}
+                {new Date(obs.createdAt).toLocaleString()}: {obs.temperature} C°
             </div>
         ))}
     </div>
