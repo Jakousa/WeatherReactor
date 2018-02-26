@@ -1,46 +1,42 @@
 require('babel-register')
 require('babel-polyfill')
-require('dotenv').config()
 
 const express = require('express')
+const webpack = require('webpack')
+const mongoose = require('mongoose')
+const webpackMiddleware = require('webpack-dev-middleware')
+const webpackHotMiddleware = require('webpack-hot-middleware')
+const webpackConfig = require('./webpack.config')
 const routes = require('./server/routes')
 const renderServerSide = require('./server/render')
-const Bundler = require('parcel-bundler')
-const mongoose = require('mongoose')
+const config = require('./utils/config')
 
-const url = process.env.DATABASE_URL
+const template = require('./template')
 
+const url = config.DATABASE_URL
 mongoose.connect(url)
 
 const app = express()
 
 app.use('/api', routes)
 
-const waitForBundle = async () => {
-    const bundler = new Bundler(
-        './client/index.html',
-        {
-            minify: true, // Parcel gets stuck if not minified
-        },
-    )
-
-    if (process.env.NODE_ENV !== 'production') {
-        console.log('start bundling')
-        await bundler.bundle()
-        console.log('Bundle done')
-        app.use(bundler.middleware())
-    } else {
-        bundler.bundle()
-        app.use('/dist', express.static('dist/'))
-        app.get('/', renderServerSide(bundler))
-    }
+if (config.NODE_ENV !== 'production') {
+    const compiler = webpack(webpackConfig)
+    app.use(webpackMiddleware(compiler, {
+        publicPath: '/dist',
+    }))
+    app.use(webpackHotMiddleware(compiler))
+    app.get('/', (req, res) => {
+        res.set('Content-Type', 'text/html')
+        res.send(Buffer.from(template()))
+    })
+} else {
+    app.use('/dist', express.static('dist/'))
+    app.get('/', renderServerSide)
 }
 
-waitForBundle(app).then(() => {
-    const PORT = process.env.PORT || 3000
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`)
-    })
+app.listen(config.PORT, () => {
+    console.log(`Server running on port ${config.PORT}`)
 })
 
 process.on('SIGINT', () => {
