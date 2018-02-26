@@ -41,7 +41,6 @@ export default class LocationControl extends Component {
                         visible={displayList}
                         icon="labeled"
                         vertical
-                        inverted
                     >
                         <ObservationList observations={this.props.location.observations} />
                     </Sidebar>
